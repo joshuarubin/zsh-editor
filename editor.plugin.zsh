@@ -87,17 +87,17 @@ function editor-info {
   typeset -gA editor_info
 
   if [[ "$KEYMAP" == 'vicmd' ]]; then
-    zstyle -s ':prezto:module:editor:info:keymap:alternate' format 'REPLY'
+    zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:keymap:alternate' format 'REPLY'
     editor_info[keymap]="$REPLY"
   else
-    zstyle -s ':prezto:module:editor:info:keymap:primary' format 'REPLY'
+    zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:keymap:primary' format 'REPLY'
     editor_info[keymap]="$REPLY"
 
     if [[ "$ZLE_STATE" == *overwrite* ]]; then
-      zstyle -s ':prezto:module:editor:info:keymap:primary:overwrite' format 'REPLY'
+      zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:keymap:primary:overwrite' format 'REPLY'
       editor_info[overwrite]="$REPLY"
     else
-      zstyle -s ':prezto:module:editor:info:keymap:primary:insert' format 'REPLY'
+      zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:keymap:primary:insert' format 'REPLY'
       editor_info[overwrite]="$REPLY"
     fi
   fi
@@ -143,12 +143,12 @@ function zle-line-finish {
 }
 zle -N zle-line-finish
 
-# Toggles emacs overwrite mode and updates editor information.
-function overwrite-mode {
-  zle .overwrite-mode
+# Toggles vi insert mode and updates editor information.
+function insert-mode {
+  zle .insert-mode
   zle editor-info
 }
-zle -N overwrite-mode
+zle -N insert-mode
 
 # Enters vi insert mode and updates editor information.
 function vi-insert {
@@ -172,20 +172,10 @@ function vi-replace  {
 }
 zle -N vi-replace
 
-# Expands .... to ../..
-function expand-dot-to-parent-directory-path {
-  if [[ $LBUFFER = *.. ]]; then
-    LBUFFER+='/..'
-  else
-    LBUFFER+='.'
-  fi
-}
-zle -N expand-dot-to-parent-directory-path
-
 # Displays an indicator when completing.
 function expand-or-complete-with-indicator {
   local indicator
-  zstyle -s ':prezto:module:editor:info:completing' format 'indicator'
+  zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:completing' format 'indicator'
   print -Pn "$indicator"
   zle expand-or-complete
   zle redisplay
@@ -203,38 +193,6 @@ zle -N prepend-sudo
 
 # Reset to default key bindings.
 bindkey -d
-
-#
-# Emacs Key Bindings
-#
-
-for key in "$key_info[Escape]"{B,b} "${(s: :)key_info[ControlLeft]}"
-  bindkey -M emacs "$key" emacs-backward-word
-for key in "$key_info[Escape]"{F,f} "${(s: :)key_info[ControlRight]}"
-  bindkey -M emacs "$key" emacs-forward-word
-
-# Kill to the beginning of the line.
-for key in "$key_info[Escape]"{K,k}
-  bindkey -M emacs "$key" backward-kill-line
-
-# Redo.
-bindkey -M emacs "$key_info[Escape]_" redo
-
-# Search previous character.
-bindkey -M emacs "$key_info[Control]X$key_info[Control]B" vi-find-prev-char
-
-# Match bracket.
-bindkey -M emacs "$key_info[Control]X$key_info[Control]]" vi-match-bracket
-
-# Edit command in an external editor.
-bindkey -M emacs "$key_info[Control]X$key_info[Control]E" edit-command-line
-
-if (( $+widgets[history-incremental-pattern-search-backward] )); then
-  bindkey -M emacs "$key_info[Control]R" \
-    history-incremental-pattern-search-backward
-  bindkey -M emacs "$key_info[Control]S" \
-    history-incremental-pattern-search-forward
-fi
 
 #
 # Vi Key Bindings
@@ -256,74 +214,54 @@ else
 fi
 
 #
-# Emacs and Vi Key Bindings
+# Vi Key Bindings
 #
 
-for keymap in 'emacs' 'viins'; do
-  bindkey -M "$keymap" "$key_info[Home]" beginning-of-line
-  bindkey -M "$keymap" "$key_info[End]" end-of-line
+bindkey -M "viins" "$key_info[Home]" beginning-of-line
+bindkey -M "viins" "$key_info[End]" end-of-line
 
-  bindkey -M "$keymap" "$key_info[Insert]" overwrite-mode
-  bindkey -M "$keymap" "$key_info[Delete]" delete-char
-  bindkey -M "$keymap" "$key_info[Backspace]" backward-delete-char
+bindkey -M "viins" "$key_info[Insert]" insert-mode
+bindkey -M "viins" "$key_info[Delete]" delete-char
+bindkey -M "viins" "$key_info[Backspace]" backward-delete-char
 
-  bindkey -M "$keymap" "$key_info[Left]" backward-char
-  bindkey -M "$keymap" "$key_info[Right]" forward-char
+bindkey -M "viins" "$key_info[Left]" backward-char
+bindkey -M "viins" "$key_info[Right]" forward-char
 
-  # Expand history on space.
-  bindkey -M "$keymap" ' ' magic-space
+# Expand history on space.
+bindkey -M "viins" ' ' magic-space
 
-  # Clear screen.
-  bindkey -M "$keymap" "$key_info[Control]L" clear-screen
+# Clear screen.
+bindkey -M "viins" "$key_info[Control]L" clear-screen
 
-  # Expand command name to full path.
-  for key in "$key_info[Escape]"{E,e}
-    bindkey -M "$keymap" "$key" expand-cmd-path
+# Expand command name to full path.
+for key in "$key_info[Escape]"{E,e}
+  bindkey -M "viins" "$key" expand-cmd-path
 
-  # Duplicate the previous word.
-  for key in "$key_info[Escape]"{M,m}
-    bindkey -M "$keymap" "$key" copy-prev-shell-word
+# Duplicate the previous word.
+for key in "$key_info[Escape]"{M,m}
+  bindkey -M "viins" "$key" copy-prev-shell-word
 
-  # Use a more flexible push-line.
-  for key in "$key_info[Control]Q" "$key_info[Escape]"{q,Q}
-    bindkey -M "$keymap" "$key" push-line-or-edit
+# Use a more flexible push-line.
+for key in "$key_info[Control]Q" "$key_info[Escape]"{q,Q}
+  bindkey -M "viins" "$key" push-line-or-edit
 
-  # Bind Shift + Tab to go to the previous menu item.
-  bindkey -M "$keymap" "$key_info[BackTab]" reverse-menu-complete
+# Bind Shift + Tab to go to the previous menu item.
+bindkey -M "viins" "$key_info[BackTab]" reverse-menu-complete
 
-  # Complete in the middle of word.
-  bindkey -M "$keymap" "$key_info[Control]I" expand-or-complete
+# Complete in the middle of word.
+bindkey -M "viins" "$key_info[Control]I" expand-or-complete
 
-  # Expand .... to ../..
-  if zstyle -t ':prezto:module:editor' dot-expansion; then
-    bindkey -M "$keymap" "." expand-dot-to-parent-directory-path
-  fi
+# Display an indicator when completing.
+bindkey -M "viins" "$key_info[Control]I" expand-or-complete-with-indicator
 
-  # Display an indicator when completing.
-  bindkey -M "$keymap" "$key_info[Control]I" \
-    expand-or-complete-with-indicator
-
-  # Insert 'sudo ' at the beginning of the line.
-  bindkey -M "$keymap" "$key_info[Control]X$key_info[Control]S" prepend-sudo
-done
-
-# Do not expand .... to ../.. during incremental search.
-if zstyle -t ':prezto:module:editor' dot-expansion; then
-  bindkey -M isearch . self-insert 2> /dev/null
-fi
+# Insert 'sudo ' at the beginning of the line.
+bindkey -M "viins" "$key_info[Control]X$key_info[Control]S" prepend-sudo
 
 #
 # Layout
 #
 
 # Set the key layout.
-zstyle -s ':prezto:module:editor' key-bindings 'key_bindings'
-if [[ "$key_bindings" == (emacs|) ]]; then
-  bindkey -e
-elif [[ "$key_bindings" == vi ]]; then
-  bindkey -v
-else
-  print "prezto: editor: invalid key bindings: $key_bindings" >&2
-fi
+bindkey -v
 
 unset key{,map,bindings}
