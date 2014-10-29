@@ -208,9 +208,11 @@ bindkey -M vicmd "$key_info[Control]R" redo
 if (( $+widgets[history-incremental-pattern-search-backward] )); then
   bindkey -M vicmd "?" history-incremental-pattern-search-backward
   bindkey -M vicmd "/" history-incremental-pattern-search-forward
+  bindkey -M viins '^r' history-incremental-pattern-search-backward 
 else
   bindkey -M vicmd "?" history-incremental-search-backward
   bindkey -M vicmd "/" history-incremental-search-forward
+  bindkey -M viins '^r' history-incremental-search-backward 
 fi
 
 #
@@ -256,6 +258,13 @@ bindkey -M "viins" "$key_info[Control]I" expand-or-complete-with-indicator
 
 # Insert 'sudo ' at the beginning of the line.
 bindkey -M "viins" "$key_info[Control]X$key_info[Control]S" prepend-sudo
+
+# emacs style
+bindkey '^a' beginning-of-line
+bindkey '^e' end-of-line
+
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
 
 #
 # Layout
