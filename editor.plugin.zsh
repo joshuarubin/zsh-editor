@@ -115,20 +115,6 @@ function zle-keymap-select {
 }
 zle -N zle-keymap-select
 
-# Enables terminal application mode and updates editor information.
-function zle-line-init {
-  # The terminal must be in application mode when ZLE is active for $terminfo
-  # values to be valid.
-  if (( $+terminfo[smkx] )); then
-    # Enable terminal application mode.
-    echoti smkx
-  fi
-
-  # Update editor information.
-  zle editor-info
-}
-zle -N zle-line-init
-
 # Disables terminal application mode and updates editor information.
 function zle-line-finish {
   # The terminal must be in application mode when ZLE is active for $terminfo
@@ -254,7 +240,7 @@ bindkey -M "viins" "$key_info[BackTab]" reverse-menu-complete
 bindkey -M "viins" "$key_info[Control]I" expand-or-complete
 
 # Display an indicator when completing.
-bindkey -M "viins" "$key_info[Control]I" expand-or-complete-with-indicator
+# bindkey -M "viins" "$key_info[Control]I" expand-or-complete-with-indicator
 
 # Insert 'sudo ' at the beginning of the line.
 bindkey -M "viins" "$key_info[Control]X$key_info[Control]S" prepend-sudo
