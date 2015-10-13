@@ -87,17 +87,17 @@ function editor-info {
   typeset -gA editor_info
 
   if [[ "$KEYMAP" == 'vicmd' ]]; then
-    zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:keymap:alternate' format 'REPLY'
+    zstyle -s ':prezto:module:editor:info:keymap:alternate' format 'REPLY'
     editor_info[keymap]="$REPLY"
   else
-    zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:keymap:primary' format 'REPLY'
+    zstyle -s ':prezto:module:editor:info:keymap:primary' format 'REPLY'
     editor_info[keymap]="$REPLY"
 
     if [[ "$ZLE_STATE" == *overwrite* ]]; then
-      zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:keymap:primary:overwrite' format 'REPLY'
+      zstyle -s ':prezto:module:editor:info:keymap:primary:overwrite' format 'REPLY'
       editor_info[overwrite]="$REPLY"
     else
-      zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:keymap:primary:insert' format 'REPLY'
+      zstyle -s ':prezto:module:editor:info:keymap:primary:insert' format 'REPLY'
       editor_info[overwrite]="$REPLY"
     fi
   fi
@@ -115,6 +115,27 @@ function zle-keymap-select {
 }
 zle -N zle-keymap-select
 
+# Enables terminal application mode and updates editor information.
+function zle-line-init {
+  # The terminal must be in application mode when ZLE is active for $terminfo
+  # values to be valid.
+  if (( $+terminfo[smkx] )); then
+    # Enable terminal application mode.
+    echoti smkx
+  fi
+
+  # Update editor information.
+  zle editor-info
+}
+zle -N zle-line-init
+
+# Toggles vi insert mode and updates editor information.
+function insert-mode {
+  zle .insert-mode
+  zle editor-info
+}
+zle -N insert-mode
+
 # Disables terminal application mode and updates editor information.
 function zle-line-finish {
   # The terminal must be in application mode when ZLE is active for $terminfo
@@ -128,13 +149,6 @@ function zle-line-finish {
   zle editor-info
 }
 zle -N zle-line-finish
-
-# Toggles vi insert mode and updates editor information.
-function insert-mode {
-  zle .insert-mode
-  zle editor-info
-}
-zle -N insert-mode
 
 # Enters vi insert mode and updates editor information.
 function vi-insert {
@@ -161,7 +175,7 @@ zle -N vi-replace
 # Displays an indicator when completing.
 function expand-or-complete-with-indicator {
   local indicator
-  zstyle -s ':antigen:bundle:joshuarubin:zsh-editor:completing' format 'indicator'
+  zstyle -s ':prezto:module:editor:info:completing' format 'indicator'
   print -Pn "$indicator"
   zle expand-or-complete
   zle redisplay
@@ -194,11 +208,11 @@ bindkey -M vicmd "$key_info[Control]R" redo
 if (( $+widgets[history-incremental-pattern-search-backward] )); then
   bindkey -M vicmd "?" history-incremental-pattern-search-backward
   bindkey -M vicmd "/" history-incremental-pattern-search-forward
-  bindkey -M viins '^r' history-incremental-pattern-search-backward 
+  bindkey -M viins '^r' history-incremental-pattern-search-backward
 else
   bindkey -M vicmd "?" history-incremental-search-backward
   bindkey -M vicmd "/" history-incremental-search-forward
-  bindkey -M viins '^r' history-incremental-search-backward 
+  bindkey -M viins '^r' history-incremental-search-backward
 fi
 
 #
