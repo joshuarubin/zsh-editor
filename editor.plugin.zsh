@@ -275,6 +275,11 @@ bindkey -M "viins" "$key_info[Control]I" \
 # Insert 'sudo ' at the beginning of the line.
 bindkey -M "viins" "$key_info[Control]X$key_info[Control]S" prepend-sudo
 
+# Do not expand .... to ../.. during incremental search.
+if zstyle -t ':prezto:module:editor' dot-expansion; then
+  bindkey -M isearch . self-insert 2> /dev/null
+fi
+
 # emacs style
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
