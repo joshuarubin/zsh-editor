@@ -172,6 +172,16 @@ function vi-replace  {
 }
 zle -N vi-replace
 
+# Expands .... to ../..
+function expand-dot-to-parent-directory-path {
+  if [[ $LBUFFER = *.. ]]; then
+    LBUFFER+='/..'
+  else
+    LBUFFER+='.'
+  fi
+}
+zle -N expand-dot-to-parent-directory-path
+
 # Displays an indicator when completing.
 function expand-or-complete-with-indicator {
   local indicator
@@ -252,6 +262,11 @@ bindkey -M "viins" "$key_info[BackTab]" reverse-menu-complete
 
 # Complete in the middle of word.
 bindkey -M "viins" "$key_info[Control]I" expand-or-complete
+
+# Expand .... to ../..
+if zstyle -t ':prezto:module:editor' dot-expansion; then
+  bindkey -M "viins" "." expand-dot-to-parent-directory-path
+fi
 
 # Display an indicator when completing.
 bindkey -M "viins" "$key_info[Control]I" \
