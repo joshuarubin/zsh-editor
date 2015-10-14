@@ -129,13 +129,6 @@ function zle-line-init {
 }
 zle -N zle-line-init
 
-# Toggles vi insert mode and updates editor information.
-function insert-mode {
-  zle .insert-mode
-  zle editor-info
-}
-zle -N insert-mode
-
 # Disables terminal application mode and updates editor information.
 function zle-line-finish {
   # The terminal must be in application mode when ZLE is active for $terminfo
@@ -149,6 +142,13 @@ function zle-line-finish {
   zle editor-info
 }
 zle -N zle-line-finish
+
+# Toggles emacs overwrite mode and updates editor information.
+function overwrite-mode {
+  zle .overwrite-mode
+  zle editor-info
+}
+zle -N overwrite-mode
 
 # Enters vi insert mode and updates editor information.
 function vi-insert {
@@ -222,7 +222,7 @@ fi
 bindkey -M "viins" "$key_info[Home]" beginning-of-line
 bindkey -M "viins" "$key_info[End]" end-of-line
 
-bindkey -M "viins" "$key_info[Insert]" insert-mode
+bindkey -M "viins" "$key_info[Insert]" overwrite-mode
 bindkey -M "viins" "$key_info[Delete]" delete-char
 bindkey -M "viins" "$key_info[Backspace]" backward-delete-char
 
@@ -254,7 +254,8 @@ bindkey -M "viins" "$key_info[BackTab]" reverse-menu-complete
 bindkey -M "viins" "$key_info[Control]I" expand-or-complete
 
 # Display an indicator when completing.
-# bindkey -M "viins" "$key_info[Control]I" expand-or-complete-with-indicator
+bindkey -M "viins" "$key_info[Control]I" \
+  expand-or-complete-with-indicator
 
 # Insert 'sudo ' at the beginning of the line.
 bindkey -M "viins" "$key_info[Control]X$key_info[Control]S" prepend-sudo
