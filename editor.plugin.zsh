@@ -235,6 +235,7 @@ bindkey -M "viins" "$key_info[End]" end-of-line
 bindkey -M "viins" "$key_info[Insert]" overwrite-mode
 bindkey -M "viins" "$key_info[Delete]" delete-char
 bindkey -M "viins" "$key_info[Backspace]" backward-delete-char
+bindkey -M "viins" "^W" backward-kill-word
 
 bindkey -M "viins" "$key_info[Left]" backward-char
 bindkey -M "viins" "$key_info[Right]" forward-char
